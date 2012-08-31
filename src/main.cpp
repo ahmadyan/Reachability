@@ -29,9 +29,11 @@
 #include "polytope.h"
 #include "point.h"
 
+const int simulationSampleSize = 2;
+const double errorBound=0.1;
+
 int main (void){    
     srand((unsigned)time(NULL));
-    const double errorBound=0.1;
     //Setting-up system
     reachability::System* system = new reachability::System(reachability::vanderpol);
     Plotter* plotter = new Plotter(gnuPlot, system);
@@ -46,8 +48,10 @@ int main (void){
     
 
     //Code for drawing a single transient
-    vector<pair<double, double> > trace = system->simulate();
-    plotter->drawArray(trace);
+    for(int i=0;i<simulationSampleSize;i++){
+    	vector<pair<double, double> > trace = system->simulate();
+    	plotter->drawArray(trace);
+    }
     
     plotter->execute(system->generateVectorField());
     plotter->saveToPdf("test.ps");

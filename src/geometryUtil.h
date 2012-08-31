@@ -37,4 +37,5 @@ namespace geometry{
     int position(Point* p1, Point* p2, Point* M);
     double rad2deg(double rad);
     double deg2rad(double deg);
+    bool comparePoint(Point* a, Point* b, Point* o);
 }

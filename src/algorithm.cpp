@@ -72,20 +72,20 @@ namespace reachability{
             node->divide(system);
             vector<Node*> kids= node->getChildren();
             if(node->isInitialState){
-                for(int i=0;i<kids.size();i++){
+                for(unsigned int i=0;i<kids.size();i++){
                     if(kids[i]->contain(system->getInitialPoly())) kids[i]->setAsInitialState() ;
                 }
             }
         
             double err=numeric_limits<double>::max( );
-            for(int i=0;i<kids.size();i++){
+            for(unsigned int i=0;i<kids.size();i++){
                 double volume = ((Polytope*)kids[i])->getVolume();
                 if(err<volume) err=volume ;
             }
             if( err<currentError ) currentError = err ;
             if( currentError <= errorBound ) node->divided=false ;
 
-            for(int i=0;i<kids.size();i++){
+            for(unsigned int i=0;i<kids.size();i++){
                 checkReachability(kids[i]);
             }
         }
@@ -97,7 +97,7 @@ namespace reachability{
             bool reachable = false; 
             if(node->isInitialState) reachable = true ;
             vector<Node*> neighbors = ((KDTree*)tree)->getNeighbors(node);
-            for(int i=0; i<neighbors.size(); i++){
+            for(unsigned int i=0; i<neighbors.size(); i++){
                 if(neighbors[i]->isReachable){
                     if( system->isReachable(neighbors[i], node) )
                         reachable = true ;
@@ -114,7 +114,7 @@ namespace reachability{
             bool reachable = false;
             if(node->isInitialState) reachable = true ;
             vector<Node*> neighbors = node->getNeighbors(node);
-            for(int i=0; i<neighbors.size(); i++){
+            for(unsigned int i=0; i<neighbors.size(); i++){
                 if(neighbors[i]->isReachable){
                     if( system->isReachable(neighbors[i], node) )
                         reachable = true ;
@@ -149,7 +149,7 @@ namespace reachability{
             if(node->max[1]==system->getMax(1)) nodeIsAdjacentToUnreachableRegion = true ;
             
             vector<Node*> neighbors = tree->getNeighbors(node);
-            for(int i=0; i<neighbors.size(); i++){
+            for(unsigned int i=0; i<neighbors.size(); i++){
                 if(!neighbors[i]->isReachable){
                     nodeIsAdjacentToUnreachableRegion = true ;
                 }
@@ -177,7 +177,7 @@ namespace reachability{
                     if(node->getPoint(i)->getData(1)==system->getMax(1)  ) nodeIsAdjacentToUnreachableRegion = true ;
             }
             
-            for(int i=0;i<node->getNeighbors(NULL).size(); i++){
+            for(unsigned int i=0;i<node->getNeighbors(NULL).size(); i++){
                 if( !node->getNeighbors(NULL)[i]->isReachable){
                     nodeIsAdjacentToUnreachableRegion = true ;
                 }
@@ -201,7 +201,7 @@ namespace reachability{
                 //function divideANode also sets the currentError.
                 divideANode(node);
                 vector<Node*> kids= node->getChildren();
-                for(int i=0;i<kids.size();i++){
+                for(unsigned int i=0;i<kids.size();i++){
                     q.push(kids[i]);
                 }
             }

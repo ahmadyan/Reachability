@@ -31,8 +31,7 @@ namespace reachability {
         
         double volume ;
 
-        Polytope* node1 ;
-        Polytope* node2 ;
+        vector<Polytope*> nodes ;
 
         Polytope(int);
         Polytope(int _dim, vector<Point*> v);

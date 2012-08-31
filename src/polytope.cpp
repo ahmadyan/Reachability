@@ -229,6 +229,8 @@ namespace reachability {
     //  first we need to create a list of neighbors for the kids, this is a subset of neighbors from the parent
     //  then we have to update the list of neighbors of the neighbors of the parent.
     void Polytope::updateNeighbors(){
+    	Polytope* node1 = nodes[0];
+    	Polytope* node2 = nodes[1];
         node1->addNeighbor(node2);
         node2->addNeighbor(node1);
         for(int i=0;i<neighbors.size();i++){
@@ -311,36 +313,72 @@ namespace reachability {
         pair<bool, vector<Point*> > result = findCommonEdge(p1,p2);
         return result.first;
     }
-        
+    //divide will partition a given polytope into 2^n new convex polytopes.
+    //The newly generated polytope will be added to the kids nodes collection.
+    //The criteria of partitioning is based on the direction of the trajectories at the centeroid of polytope.
     //This function is a pain in the ass!
-    //TODO: This function is only valid for 2-dimensional systems
+    //TODO: This function is only valid for 2-dimensional systems, extend this to higher dimensions
     void Polytope::divide(System* system){
         divided=true;
+
+        // Part 1: Find the vertexes of new polytopes.
+
         //First find the center point of the polytope
         Point* center = getCentroid() ;
         
         //Compute direction of vector flow at the center point using system
-        double* v1 = system->getVector(center->getData());
-        double* u2 = geometry::GramSchmidt(dim, v1) ;
-        
+        double* trajectoryVector1 = system->getVector(center->getData());
+        //trajectory2 is perpendicular vector to trajectory 1 at center point.
+        //keep in mind that there are infinite orthogonal vector to any vector,
+        //in GS, we first create the plane by generating a random vector, then return the result.
+        double* trajectoryVector2 = geometry::GramSchmidt(dim, trajectoryVector1) ;
         
         //Todo: using points will increase the pointID, we should not use points here. use some other thing in here later.
-        vector<Point*> v = findIntersectionWithBorders(u2, system, center);
+        //To find intersection points with the polytope, first we need to create a line. Since this line cannot be unlimited
+        //and must be bigger than the polytope, we create a line from the edge-to-edge of the state-space with the selected slope.
+        //checking where those lines intersects with edges of space,
+        vector<Point*> v1 = findIntersectionWithBorders(trajectoryVector1, system, center);
+        vector<Point*> v2 = findIntersectionWithBorders(trajectoryVector2, system, center);
+
+        enum PointType {PolyOriginal, PolyType1, PolyType2};
+        vector<pair<Point*, PointType> > p;
+        for(int i=0;i<points.size(); i++){
+        	p.push_back(make_pair(points[i], PolyOriginal));
+        }
         
-        vector<int> w ;
-        for(int i=0;i<points.size()-1;i++){
-            if(geometry::intersection(v[0], v[1], points[i], points[i+1])){
-                w.push_back(i);
+        vector<int> w1; //w1 is the array of new intersection points of v1 lines with the polytopes
+        vector<int> w2; //w2 is the array of new intersection points of v2 lines with the polytopes
+        for(unsigned int i=0;i<points.size()-1;i++){
+            if(geometry::intersection(v1[0], v1[1], points[i], points[i+1])){
+                w1.push_back(i);
+            }
+            if(geometry::intersection(v2[0], v2[1], points[i], points[i+1])){
+            	w2.push_back(i);
             }
         }
-        if(geometry::intersection(v[0], v[1], points[points.size()-1], points[0])){
-            w.push_back(points.size()-1);
+        if(geometry::intersection(v1[0], v1[1], points[points.size()-1], points[0])){
+            w1.push_back(points.size()-1);
         }
+        if(geometry::intersection(v2[0], v2[1], points[points.size()-1], points[0])){
+            w2.push_back(points.size()-1);
+        }
+
+        p.push_back(make_pair( geometry::intersectionPoint(points[w1[0]], (w1[0]==points.size()-1?points[0]:points[w1[0]+1]), v1[0], v1[1]) , PolyType1));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w1[1]], (w1[1]==points.size()-1?points[0]:points[w1[1]+1]), v1[0], v1[1]) , PolyType1));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w2[0]], (w2[0]==points.size()-1?points[0]:points[w2[0]+1]), v2[0], v2[1]) , PolyType2));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w2[1]], (w2[1]==points.size()-1?points[0]:points[w2[1]+1]), v2[0], v2[1]) , PolyType2));
+
+        //Sort p in clock-wise order based on center point
+        for(int i=0;i<p.size();i++){
+        	for(int j=0;j<p.size();j++){
+        		if( geometry::comparePoint(p[i].first, p[j].first, center)){
+        			swap(p[i], p[j]);
+        		}
+        	}
+        }
+
         
-        Point* pi = geometry::intersectionPoint(points[w[0]], (w[0]==points.size()-1?points[0]:points[w[0]+1]), v[0], v[1]);
-        Point* pj = geometry::intersectionPoint(points[w[1]], (w[1]==points.size()-1?points[0]:points[w[1]+1]), v[0], v[1]);
-                
-        
+
         //Constructing the divided polyople, a and b
         //Collecting points
         //First polytope
@@ -364,8 +402,8 @@ namespace reachability {
             vb.push_back(points[i]);
         }
                 
-        node1 = new Polytope(dim, va);
-        node2 = new Polytope(dim, vb);
+        nodes.push_back( new Polytope(dim, va) );
+        nodes.push_back( new Polytope(dim, vb) );
         divided=true;
         
         updateNeighbors();
@@ -397,9 +435,11 @@ namespace reachability {
     vector<Node*> Polytope::getChildren(){
         vector<Node*> v ;
         if(isDivided()){
-            v.push_back(node1);
-            v.push_back(node2);
-        }
+        	//upcasting from Polytope to Node class
+        	for(int i=0;i<nodes.size();i++){
+        		v.push_back(nodes[i]);
+        	}
+         }
         return v;
     }
     

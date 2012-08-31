@@ -275,4 +275,28 @@ namespace geometry{
     double deg2rad(double deg){
         return deg * M_PI / 180.0 ;
     }
+
+    //Radially compare point a with point b with respect to point origin.
+    //This function is used for sorting points in clock-wise or counter-clockwise order
+    //source: http://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
+    bool comparePoint(Point* a, Point* b, Point* o){
+    	if (a->getData(0) >= 0 && b->getData(0) < 0)
+    	        return true;
+    	    if (a->getData(0) == 0 && b->getData(0) == 0)
+    	        return a->getData(1) > b->getData(1);
+
+    	    // compute the cross product of vectors (center -> a) x (center -> b)
+    	    int det = (a->getData(0)-o->getData(0)) * (b->getData(1)-o->getData(1)) - (b->getData(0) - o->getData(0)) * (a->getData(1) - o->getData(1));
+    	    if (det < 0)
+    	        return true;
+    	    if (det > 0)
+    	        return false;
+
+    	    // points a and b are on the same line from the center
+    	    // check which point is closer to the center
+    	    int d1 = (a->getData(0)-o->getData(0)) * (a->getData(0)-o->getData(0)) + (a->getData(1)-o->getData(1)) * (a->getData(1)-o->getData(1));
+    	    int d2 = (b->getData(0)-o->getData(0)) * (b->getData(0)-o->getData(0)) + (b->getData(1)-o->getData(1)) * (b->getData(1)-o->getData(1));
+    	    return d1 > d2;
+
+    }
 }
