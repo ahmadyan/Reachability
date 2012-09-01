@@ -342,6 +342,8 @@ namespace reachability{
     ///    8. return the result
     bool System::isReachable(Polytope* source, Polytope* sink){
         cout << "calling is reachable" << endl ;
+        cout << source->toString() << endl ;
+        cout << sink->toString() << endl ;
 //        if( (source->getID()==64) && (sink->getID()==86 )){
 //            cout << "source" << endl;
 //            for(int i=0;i<source->points.size();i++){

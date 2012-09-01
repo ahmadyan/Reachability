@@ -24,6 +24,7 @@
 using namespace std;
 
 namespace reachability {
+	enum PointType {PolyOriginalPoint, PolyExtensionPoint};
     class Polytope : public Node{
     public:
         vector<Point*> points ;

@@ -280,23 +280,28 @@ namespace geometry{
     //This function is used for sorting points in clock-wise or counter-clockwise order
     //source: http://stackoverflow.com/questions/6989100/sort-points-in-clockwise-order
     bool comparePoint(Point* a, Point* b, Point* o){
-    	if (a->getData(0) >= 0 && b->getData(0) < 0)
-    	        return true;
-    	    if (a->getData(0) == 0 && b->getData(0) == 0)
-    	        return a->getData(1) > b->getData(1);
+    	double ax=a->getData(0);
+    	double ay=a->getData(1);
+    	double bx=b->getData(0);
+    	double by=b->getData(1);
+    	double ox=o->getData(0);
+    	double oy=o->getData(1);
+    	if (ax >= 0 && bx < 0)
+    		return true;
+    	if (eq(ax,0) && eq(bx,0))
+    		return ay > by;
 
-    	    // compute the cross product of vectors (center -> a) x (center -> b)
-    	    int det = (a->getData(0)-o->getData(0)) * (b->getData(1)-o->getData(1)) - (b->getData(0) - o->getData(0)) * (a->getData(1) - o->getData(1));
-    	    if (det < 0)
-    	        return true;
-    	    if (det > 0)
-    	        return false;
+    	// compute the cross product of vectors (center -> a) x (center -> b)
+    	double det = (ax-ox) * (by-oy) - (bx - ox) * (ay - oy);
+    	if (det < 0)
+    		return true;
+    	if (det > 0)
+    		return false;
 
-    	    // points a and b are on the same line from the center
-    	    // check which point is closer to the center
-    	    int d1 = (a->getData(0)-o->getData(0)) * (a->getData(0)-o->getData(0)) + (a->getData(1)-o->getData(1)) * (a->getData(1)-o->getData(1));
-    	    int d2 = (b->getData(0)-o->getData(0)) * (b->getData(0)-o->getData(0)) + (b->getData(1)-o->getData(1)) * (b->getData(1)-o->getData(1));
-    	    return d1 > d2;
-
+    	// points a and b are on the same line from the center
+    	// check which point is closer to the center
+    	double d1 = (ax-ox) * (ax-ox) + (ay-oy) * (ay-oy);
+    	double d2 = (bx-ox) * (bx-ox) + (by-oy) * (by-oy);
+    	return d1 > d2;
     }
 }

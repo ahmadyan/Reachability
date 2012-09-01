@@ -26,9 +26,20 @@
 #include "system.h"
 using namespace std;
 
-//const string gnuPlot = "/Applications/Gnuplot.app/Contents/Resources/bin/gnuplot" ; //Old gnuplot path (v4.0) on my Mac, does not support drawing a polygin, on aqua.
-//const string gnuPlot = "/usr/local/bin/gnuplot"; //current gnuPlot path, v4.6 on x11
-const string gnuPlot = "/usr/bin/gnuplot" ;
+#ifdef _WIN32
+	const string gnuPlot = "C:\\opt\\gnuplot\\bin\\gnuplot.exe -persist" ;
+#elif  __linux__
+	const string gnuPlot = "/usr/bin/gnuplot" ;
+#elif  __APPLE__
+	//const string gnuPlot = "/Applications/Gnuplot.app/Contents/Resources/bin/gnuplot" ; //Old gnuplot path (v4.0) on my Mac, does not support drawing a polygin, on aqua.
+	const string gnuPlot = "/usr/local/bin/gnuplot"; //current gnuPlot path, v4.6 on x11
+#else
+	const string gnuPlot = "/usr/local/bin/gnuplot";
+#error Undefined operating system/Unknown gnuplot path
+#endif
+
+//
+
 
 class Plotter{
     int dim;

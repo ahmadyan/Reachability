@@ -21,6 +21,8 @@
 #include <sstream>
 #include <cmath>
 #include <algorithm>
+#include <vector>
+#include <cstdlib>
 #include "point.h"
 #include "geometryUtil.h"
 #include "utility.h"
@@ -156,6 +158,7 @@ namespace reachability {
     
     vector<Point*> Polytope::findIntersectionWithBorders(double* u2, System* system, Point* center){
         vector<Point*> v ;
+        cout << u2[1] << " " << u2[0] << endl ;
 
         double m = u2[1]/u2[0] ;   
         double b = center->getData(1) - m*center->getData(0) ;
@@ -208,6 +211,7 @@ namespace reachability {
             v.push_back(p);
         }
         
+        cout << v.size() << endl ;
         if(v.size()<2) cout<< "something is wrong at polytope divide function!" << endl ; 
         return v;
     }
@@ -229,20 +233,18 @@ namespace reachability {
     //  first we need to create a list of neighbors for the kids, this is a subset of neighbors from the parent
     //  then we have to update the list of neighbors of the neighbors of the parent.
     void Polytope::updateNeighbors(){
-    	Polytope* node1 = nodes[0];
-    	Polytope* node2 = nodes[1];
-        node1->addNeighbor(node2);
-        node2->addNeighbor(node1);
+    	for(int i=0;i<nodes.size()-1;i++){
+    		nodes[i]->addNeighbor(nodes[i+1]);
+    	}
+    	nodes[nodes.size()-1]->addNeighbor(nodes[0]);
         for(int i=0;i<neighbors.size();i++){
             ((Polytope*)(neighbors[i]))->removeNeighbor(this);
             //Update each of these neighbors and add the new kids
-            if( IsSharingAnEdge(((Polytope*)(neighbors[i])), node1) ){
-                node1->addNeighbor(((Polytope*)(neighbors[i])));
-                ((Polytope*)(neighbors[i]))->addNeighbor(node1);
-            }
-            if( IsSharingAnEdge(((Polytope*)(neighbors[i])), node2) ){
-                node2->addNeighbor(((Polytope*)(neighbors[i])));
-                ((Polytope*)(neighbors[i]))->addNeighbor(node2);
+            for(int j=0;j<nodes.size();j++){
+            	if( IsSharingAnEdge(((Polytope*)(neighbors[i])), nodes[j]) ){
+            		nodes[j]->addNeighbor(((Polytope*)(neighbors[i])));
+            		((Polytope*)(neighbors[i]))->addNeighbor(nodes[j]);
+            	}
             }
         }
     }
@@ -313,6 +315,8 @@ namespace reachability {
         pair<bool, vector<Point*> > result = findCommonEdge(p1,p2);
         return result.first;
     }
+
+
     //divide will partition a given polytope into 2^n new convex polytopes.
     //The newly generated polytope will be added to the kids nodes collection.
     //The criteria of partitioning is based on the direction of the trajectories at the centeroid of polytope.
@@ -328,6 +332,11 @@ namespace reachability {
         
         //Compute direction of vector flow at the center point using system
         double* trajectoryVector1 = system->getVector(center->getData());
+        if(trajectoryVector1[0]==0 && trajectoryVector1[1]==0){
+        	trajectoryVector1[0]= 0.27 ; // ((double) rand() / (RAND_MAX+1)) ;
+        	trajectoryVector1[1]= 0.86  ;
+        }
+
         //trajectory2 is perpendicular vector to trajectory 1 at center point.
         //keep in mind that there are infinite orthogonal vector to any vector,
         //in GS, we first create the plane by generating a random vector, then return the result.
@@ -337,13 +346,15 @@ namespace reachability {
         //To find intersection points with the polytope, first we need to create a line. Since this line cannot be unlimited
         //and must be bigger than the polytope, we create a line from the edge-to-edge of the state-space with the selected slope.
         //checking where those lines intersects with edges of space,
+
+
         vector<Point*> v1 = findIntersectionWithBorders(trajectoryVector1, system, center);
         vector<Point*> v2 = findIntersectionWithBorders(trajectoryVector2, system, center);
 
-        enum PointType {PolyOriginal, PolyType1, PolyType2};
-        vector<pair<Point*, PointType> > p;
+
+        vector< pair<Point*, PointType> > p;
         for(int i=0;i<points.size(); i++){
-        	p.push_back(make_pair(points[i], PolyOriginal));
+        	p.push_back(make_pair(points[i], PolyOriginalPoint));
         }
         
         vector<int> w1; //w1 is the array of new intersection points of v1 lines with the polytopes
@@ -363,55 +374,47 @@ namespace reachability {
             w2.push_back(points.size()-1);
         }
 
-        p.push_back(make_pair( geometry::intersectionPoint(points[w1[0]], (w1[0]==points.size()-1?points[0]:points[w1[0]+1]), v1[0], v1[1]) , PolyType1));
-        p.push_back(make_pair( geometry::intersectionPoint(points[w1[1]], (w1[1]==points.size()-1?points[0]:points[w1[1]+1]), v1[0], v1[1]) , PolyType1));
-        p.push_back(make_pair( geometry::intersectionPoint(points[w2[0]], (w2[0]==points.size()-1?points[0]:points[w2[0]+1]), v2[0], v2[1]) , PolyType2));
-        p.push_back(make_pair( geometry::intersectionPoint(points[w2[1]], (w2[1]==points.size()-1?points[0]:points[w2[1]+1]), v2[0], v2[1]) , PolyType2));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w1[0]], (w1[0]==points.size()-1?points[0]:points[w1[0]+1]), v1[0], v1[1]) , PolyExtensionPoint));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w1[1]], (w1[1]==points.size()-1?points[0]:points[w1[1]+1]), v1[0], v1[1]) , PolyExtensionPoint));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w2[0]], (w2[0]==points.size()-1?points[0]:points[w2[0]+1]), v2[0], v2[1]) , PolyExtensionPoint));
+        p.push_back(make_pair( geometry::intersectionPoint(points[w2[1]], (w2[1]==points.size()-1?points[0]:points[w2[1]+1]), v2[0], v2[1]) , PolyExtensionPoint));
+
 
         //Sort p in clock-wise order based on center point
         for(int i=0;i<p.size();i++){
         	for(int j=0;j<p.size();j++){
-        		if( geometry::comparePoint(p[i].first, p[j].first, center)){
+        		double angle1 = atan2( p[i].first->getData(1) - center->getData(1), p[i].first->getData(0) - center->getData(0)) ;
+        		double angle2 = atan2( p[j].first->getData(1) - center->getData(1), p[j].first->getData(0) - center->getData(0)) ;
+        		if(angle1>angle2){
         			swap(p[i], p[j]);
         		}
         	}
         }
 
-        
 
-        //Constructing the divided polyople, a and b
-        //Collecting points
-        //First polytope
-        vector<Point*> va ;
-        vector<Point*> vb ;
-        
-        for(int i=0;i<=w[0];i++){
-            va.push_back(points[i]);
+        //Constructing the partitioned polytopes,
+        //All the points are in sorted in p collection, the idea is that I start with a point from intersection of w1 to one of the faces of parent poly,
+        //then I traverse it until I find the point from the intersection of w2 to parent poly. then add center point to this and we have a new winner!
+        int i=0;
+        while(p[i].second!=PolyExtensionPoint) i++;
+        for(int polyCount=0;polyCount< (2<<(dim-1));polyCount++){
+        	vector<Point*> poly;
+        	poly.push_back(center);
+        	poly.push_back(p[i].first);
+        	i=(i==p.size()-1)?0:i+1;	//circular-array
+        	while(p[i].second!=PolyExtensionPoint){
+        		poly.push_back(p[i].first);
+        		i=(i==p.size()-1)?0:i+1;	//circular-array
+        	}
+        	poly.push_back(p[i].first);
+        	nodes.push_back( new Polytope(dim, poly) ) ;
         }
-        va.push_back(pi);
-        va.push_back(pj);
-        for(int i=w[1]+1; i<points.size();i++){
-            va.push_back(points[i]);
-        }
-        
-        vb.push_back(pj);
-        vb.push_back(pi);
-        
-        //2nd Polytope
-        for(int i=w[0]+1;i<=w[1];i++){
-            vb.push_back(points[i]);
-        }
-                
-        nodes.push_back( new Polytope(dim, va) );
-        nodes.push_back( new Polytope(dim, vb) );
-        divided=true;
         
         updateNeighbors();
         
         //Cleaning up
-        delete v1;
-        delete u2;
-        delete center;
+        delete trajectoryVector1;
+        delete trajectoryVector2;
     }
     
     std::string Polytope::toString(){
@@ -436,7 +439,9 @@ namespace reachability {
         vector<Node*> v ;
         if(isDivided()){
         	//upcasting from Polytope to Node class
+        	cout << nodes.size() << endl ;
         	for(int i=0;i<nodes.size();i++){
+        		cout << i << " - "<< nodes[i]->toString() << endl ;
         		v.push_back(nodes[i]);
         	}
          }

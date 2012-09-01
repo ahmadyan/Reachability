@@ -60,7 +60,6 @@ namespace reachability {
         for(int i=0;i<dim;i++){
             str << data[i] << " " ;
         }
-        str << endl ;
         return str.str();
     }
 }
