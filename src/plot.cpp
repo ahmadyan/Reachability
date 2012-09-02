@@ -92,7 +92,6 @@ void Plotter::drawLine(double iFromX, double iFromY, double iFromZ, double iToX,
 void Plotter::drawLine(double iFromX, double iFromY, double iToX, double iToY){
     stringstream cmdstr;
     cmdstr << " set arrow from " << iFromX << "," << iFromY << " to " << iToX << "," << iToY << " nohead  lc rgb \"blue\" lw 2 \n" ;
-    //cout  << " set arrow from " << iFromX << "," << iFromY << " to " << iToX << "," << iToY << " nohead  lc rgb \"blue\" lw 2 " << endl ;
     fprintf(gnuplotPipe, cmdstr.str().c_str());
     fflush(gnuplotPipe);
 }
@@ -103,7 +102,6 @@ void Plotter::drawArray(vector<pair<double, double> > trace){
         pair<double,double> point1 = trace[i] ;
         pair<double,double> point2 = trace[i+1] ;
         drawLine( point1.first, point1.second, point2.first, point2.second ) ;
-        //cout << point1.first << "," << point1.second <<" ->" << point2.first <<","<< point2.second <<endl;
     }
 }
 

@@ -28,7 +28,7 @@
 #include "hyperbox.h"
 namespace reachability{
     int count = 0;
-    int countMax = 10 ;
+    int countMax = 1 ;
     //Constructor, Sets the system & create the space-partitioning tree data structure
     Algorithm::Algorithm(ReachabilityAlgorithm m,System* _system, double _errorBound){
         mode = m;
@@ -70,11 +70,7 @@ namespace reachability{
         }else if( mode==Alg_polytope ){
             Polytope* node = (Polytope*) _node ;
             node->divide(system);
-            cout << "Node is divided..." << endl ;
             vector<Node*> kids= node->getChildren();
-            cout << "Size of kids=" <<  kids.size() << endl ;
-            for(int i=0;i<kids.size();i++) cout << kids[i] << endl ;
-            cout << "Finished listing kids" << endl ;
             if(node->isInitialState){
                 for(unsigned int i=0;i<kids.size();i++){
                     if(kids[i]->contain(system->getInitialPoly())) kids[i]->setAsInitialState() ;
@@ -107,18 +103,12 @@ namespace reachability{
                         reachable = true ;
                 }
             }
-            
-            //if(node == (tree)->getRoot()->upRight ){
-            //    cout << "target node: " ;
-            //    cout << reachable << endl ;
-            //}
             node->isReachable = reachable;            
         }else if( mode == Alg_polytope){
             Polytope* node = (Polytope*) _node ;
             bool reachable = false;
             if(node->isInitialState) reachable = true ;
             vector<Node*> neighbors = node->getNeighbors(node);
-            cout << "[info] neighbors size= " << neighbors.size() << endl ;
             for(int i=0; i<neighbors.size(); i++){
                 if(neighbors[i]->isReachable){
                     if( system->isReachable(neighbors[i], node) )
@@ -204,17 +194,8 @@ namespace reachability{
             if(doesNodeNeedsDivision(node)){
                 //If nodes needs a division, divide it into finer nodes,
                 //function divideANode also sets the currentError.
-            	cout<< "Before divideANode" << endl ;
                 divideANode(node);
-                cout<< "After divideANode" << endl ;
                 vector<Node*> kids= node->getChildren();
-                cout << "Dumping kids----------------------------------------" << endl ;
-                cout << kids.size() << endl ;
-                for(int i=0;i<kids.size();i++){
-                	cout << kids[i]->toString() << endl ;
-                }
-
-                cout << endl ;
                 for(unsigned int i=0;i<kids.size();i++){
                     q.push(kids[i]);
                 }

@@ -158,7 +158,6 @@ namespace reachability {
     
     vector<Point*> Polytope::findIntersectionWithBorders(double* u2, System* system, Point* center){
         vector<Point*> v ;
-        cout << u2[1] << " " << u2[0] << endl ;
 
         double m = u2[1]/u2[0] ;   
         double b = center->getData(1) - m*center->getData(0) ;
@@ -211,7 +210,6 @@ namespace reachability {
             v.push_back(p);
         }
         
-        cout << v.size() << endl ;
         if(v.size()<2) cout<< "something is wrong at polytope divide function!" << endl ; 
         return v;
     }
@@ -250,18 +248,6 @@ namespace reachability {
     }
     
     pair<bool, vector<Point*> > Polytope::findCommonEdge(Polytope* p1, Polytope* p2){
-        //debugging:
-        cout << "dumping p1's points:" << endl ;
-        for(int i=0;i<p1->points.size();i++){
-            cout << p1->points[i]->toString() ;
-        }
-        
-        cout << "dumping p2's points:" << endl ;
-        for(int i=0;i<p2->points.size();i++){
-            cout << p2->points[i]->toString() ;
-        }
-        
-        
         vector<Point*> v;
         for(int i=0;i<p1->points.size(); i++){
             for(int j=0;j<p2->points.size();j++){
@@ -270,7 +256,6 @@ namespace reachability {
                 Point* b = p1->points[((i==p1->points.size()-1)?0:i+1)];
                 Point* c = p2->points[j];
                 Point* d = p2->points[((j==p2->points.size()-1)?0:j+1)];
-                cout << i << " " << ((i==p1->points.size()-1)?0:i+1) << " " << j << " " << ((j==p2->points.size()-1)?0:j+1) << endl ;
                 if(geometry::lineSegmentsOverlap(a, b, c, d)){
                     vector<Point*> v ;
                     if( geometry::eq(distance(a,b), distance(a,c)+ distance(c,b))){//c is between a-b
@@ -289,11 +274,6 @@ namespace reachability {
                         if(std::find(v.begin(), v.end(), b)== v.end())
                             v.push_back(b);
                     }
-                    cout << "v.size()="  << v.size() << endl ;
-                    for(int i=0;i<v.size();i++){
-                        cout << v[i]->toString() << endl ;
-                    }
-                    cout << "-----" << endl ;
                     if(v.size()==2){
                         return make_pair(true, v);
                     }
@@ -411,7 +391,7 @@ namespace reachability {
         }
         
         updateNeighbors();
-        
+
         //Cleaning up
         delete trajectoryVector1;
         delete trajectoryVector2;
@@ -423,7 +403,6 @@ namespace reachability {
         for(int i=0;i<points.size();i++){
             ss << points[i]->toString() << " " ;
         }
-        cout << endl ;
         return ss.str(); 
     }
     
@@ -439,9 +418,7 @@ namespace reachability {
         vector<Node*> v ;
         if(isDivided()){
         	//upcasting from Polytope to Node class
-        	cout << nodes.size() << endl ;
         	for(int i=0;i<nodes.size();i++){
-        		cout << i << " - "<< nodes[i]->toString() << endl ;
         		v.push_back(nodes[i]);
         	}
          }

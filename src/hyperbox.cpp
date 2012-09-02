@@ -203,10 +203,8 @@ namespace reachability{
             v.insert( v.end(), v3.begin(), v3.end() );
             v.insert( v.end(), v4.begin(), v4.end() );
         }else{
-            //cout << "checking " << toString() << endl ;
             if( isAdjacent(node) ){
                 v.push_back(this);
-                //  cout << "***** It is a neighbor" << endl ;
             }else{
                 //  cout << "Nope, It is not a neighbor" << endl ;
             }

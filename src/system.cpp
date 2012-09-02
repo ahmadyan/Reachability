@@ -196,7 +196,6 @@ namespace reachability{
         gsl_odeiv2_driver * d = gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd, 1e-6, 1e-6, 0.0);
         double t = 0.0, t1 = 20.0;
         double* state = getInitialState();
-        //cout << "intial state = " << state[0] << " " << state[1] << endl ;
         double y[2] = { state[0], state[1] };
         for (int i = 1; i <= 1000; i++){
             double ti = i * t1 / 1000.0;
@@ -341,20 +340,6 @@ namespace reachability{
     ///    7. y-dim: rotate the system for (90-theta), check for reachablity
     ///    8. return the result
     bool System::isReachable(Polytope* source, Polytope* sink){
-        cout << "calling is reachable" << endl ;
-        cout << source->toString() << endl ;
-        cout << sink->toString() << endl ;
-//        if( (source->getID()==64) && (sink->getID()==86 )){
-//            cout << "source" << endl;
-//            for(int i=0;i<source->points.size();i++){
-//                cout << source->points[i]->getData(0) << " " << source->points[i]->getData(1) << endl ;
-//            }
-//            cout << "sink" << endl ;
-//            for(int i=0;i<sink->points.size();i++){
-//                cout << sink->points[i]->getData(0) << " "  << sink->points[i]->getData(1) << endl ;
-//            }
-//        }
-        
         //Step 1: Find the adjacent edge.
         vector<Point*> interval = source->getSharedPoints(source, sink);
         Point* sourceCenter = source->getCentroid();
@@ -372,56 +357,6 @@ namespace reachability{
         }else{
             return false;
         }
-        
-        //Finding the positition of source and sink polytopes with respect to 
-        //the line crossing from point interval[0] to point interval[1]
-        /*
-        
-        
-        cout << "points" << endl ;
-        cout << interval[0]->getData(0) << " " << interval[0]->getData(1) << endl ;
-        cout << interval[1]->getData(0) << " " << interval[1]->getData(1) << endl ;
-        cout << "Positions: " << position1 << " " << position2 << endl ;
-        
-        cout << endl << endl << "----------------------" << endl ;
-        functionSign sign1 = reachability(interval[0], interval[1], 0);
-                cout << endl << endl << "----------------------" << endl ;
-        
-        functionSign sign2 = reachability(interval[0], interval[1], 1);   
-                cout << endl << endl << "----------------------" << endl ;
-        
-        cout << "sign1 = " ;
-        if(sign1==positive){
-            cout << " + " ;
-        }else if(sign1==negative){
-            cout << " - " ;
-        }else{
-            cout << " += " ;
-        }
-        cout << "\t \t sign2= " ;
-        if(sign2==positive){
-            cout << " + " ;
-        }else if(sign2==negative){
-            cout << " - " ;
-        }else{
-            cout << " += " ;
-        }
-        cout << endl ;
-        
-        // Let line L1 be the line connecting point P1 (interval[0]) to P2 (interval[1])
-        // The sign1 and sign2 would indicate the reachability of the left region of the L1 to from the right region of 
-        // L1. (if both sign1 and sign2 are positive, therefore the direction of trajectories are from right to the left of L1. 
-        // Also position -1 would indicate the polytope is on the right side and +1 if the polytope is on the left side.
-        if( position1 == 1 ){ 
-            //source is on the left side of L1
-            if( sign1==negative && sign2==negative) return false;
-            else return true;
-        }else{
-            //source is on the right side of L1
-            if( sign1==positive && sign2==positive) return false;
-            else return true;
-        }*/
-        
         return true;
     }
     
@@ -452,9 +387,6 @@ namespace reachability{
             tmp->setData(0, xf);
             tmp->setData(1, yf);
             
-            
-            
-            //cout << x << " " << y << " -->" << dx << " " << dy <<  "  = "  << xf << " " << yf << " --> " <<endl ;
             
             //positition of the trejectory w.r.t p1-p2 line
             int position1 = geometry::position(p1, p2, tmp) ;
@@ -493,22 +425,15 @@ namespace reachability{
         double dy  = p2y - p1y ;
         double theta = atan2( dy , dx ) ;     
         theta = (axis==0? -theta: -theta+ (M_PI/2) ) ; //This line took 2 days to develop!
-        cout << "theta=" << theta << "\t" << rad2deg(theta) << endl;
-        
         double sint = sin(theta) ;
         double cost = cos(theta) ;
-        cout << "sint = " << sint << "  cost" << cost << endl ;
         double p3x = (p1x+p2x)/2 ;
         double p3y = (p1y+p2y)/2 ;
         pair<double, double> p1_rotated = geometry::rotate(p1x, p1y, theta);
         pair<double, double> p2_rotated = geometry::rotate(p2x, p2y, theta);
         pair<double, double> p3_rotated = geometry::rotate(p3x, p3y, theta);
         
-        cout << p1x << " " << p1y << "\t" << p1_rotated.first << " " << p1_rotated.second << endl ;
-        cout << p2x << " " << p2y << "\t" << p2_rotated.first << " " << p2_rotated.second << endl ;
-        cout << p3x << " " << p3y << "\t" << p3_rotated.first << " " << p3_rotated.second << endl ;
-        
-        if(axis==0){    
+        if(axis==0){
             //case 1  --- ^
             // y is fixed, x is varied, check for f_y
             // y' = f(x)sint + f(y)cost
@@ -520,27 +445,19 @@ namespace reachability{
             double a_1 = -cost ;
             double a_2 = -y*cost ;
             
-            cout << "a0= " <<  a_0 << endl << " a1= " << a_1 << endl << " a2= " << a_2 << endl << endl ;
-            
             double min = p1_rotated.first ;
             double max = p2_rotated.first ;
             vector<double> coeff;
             coeff.push_back(a_0);
             coeff.push_back(a_1);
             coeff.push_back(a_2);
-            cout << "x-interval=[" << min << "," << max << "]"<<endl ;
             //Solution solution = findRoot(coeff, min, max);
             Solution solution = findRoot_fdf(coeff, min, max);            
             if(solution.existance){
-                cout << "Solution exists -->" << solution.root << endl ;
                 return posnegative ;
             }else{
-                cout << "No solution exists." << endl ;
                 double x = p3_rotated.first ;
                 double y = polynomial ( p3_rotated.first, coeff);
-                cout << "Poly(x=" << x << ")= " << y << endl ; 
-                
-                cout << "  ," <<  polynomial(p3_rotated.second, coeff) << endl ;
                 if(y>0) return positive;
                 else return negative;
             }
@@ -562,18 +479,13 @@ namespace reachability{
             vector<double> coeff;
             coeff.push_back(a_0);
             coeff.push_back(a_1);
-            cout << "y-interval=" << min << " " << max << endl ;
             //Solution solution = findRoot(coeff, min, max);
             Solution solution = findRoot_fdf(coeff, min, max);            
             if(solution.existance){
-                cout << "Solution exists -->" << solution.root << endl ;
                 return posnegative ;
             }else{
-                cout << "No solution exists." << endl ;
                 double y = p3_rotated.second ;
                 double x = polynomial ( y, coeff);
-                cout << "Poly(y=" << y << ")= " << x << endl ; 
-                                cout << "  ," <<  polynomial(p3_rotated.first, coeff) << endl ;
                 if(x>0) return positive;
                 else return negative;
             }
