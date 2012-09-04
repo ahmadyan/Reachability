@@ -43,6 +43,8 @@ int main (void){
 
     reachability::Tree* tree = (reachability::Tree*)alg->getTree();
       
+    
+    cout << endl << endl << endl << endl << tree->dump() << endl ;  
     plotter->execute(tree->drawTree());
     //delete tree;
     

@@ -231,10 +231,10 @@ namespace reachability {
     //  first we need to create a list of neighbors for the kids, this is a subset of neighbors from the parent
     //  then we have to update the list of neighbors of the neighbors of the parent.
     void Polytope::updateNeighbors(){
-    	for(int i=0;i<nodes.size()-1;i++){
-    		nodes[i]->addNeighbor(nodes[i+1]);
+    	for(int i=0;i<nodes.size();i++){
+    		nodes[i]->addNeighbor(nodes[(i==nodes.size()-1?0:i+1)]);
+            nodes[i]->addNeighbor(nodes[(i==0?nodes.size()-1:i-1)]);
     	}
-    	nodes[nodes.size()-1]->addNeighbor(nodes[0]);
         for(int i=0;i<neighbors.size();i++){
             ((Polytope*)(neighbors[i]))->removeNeighbor(this);
             //Update each of these neighbors and add the new kids

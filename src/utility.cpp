@@ -28,8 +28,7 @@ namespace utility {
     //
     // Generate a random number between 0 and 1
     // return a uniform number in [0,1].
-    double unifRand()
-    {
+    double unifRand(){
         return rand() / double(RAND_MAX);
     }
     //
@@ -37,16 +36,14 @@ namespace utility {
     // param a one end point of the interval
     // param b the other end of the interval
     // return a inform rand numberin [a,b].
-    double unifRand(double a, double b)
-    {
+    double unifRand(double a, double b){
         return (b-a)*unifRand() + a;
     }
     //
     // Generate a random integer between 1 and a given value.
     // param n the largest value 
     // return a uniform random value in [1,...,n]
-    long unifRand(long n)
-    {
+    long unifRand(long n){
         
         if (n < 0) n = -n;
         if (n==0) return 0;
@@ -60,9 +57,7 @@ namespace utility {
     }
     //
     // Reset the random number generator with the system clock.
-    void seed()
-    {
+    void seed(){
         srand(time(0));
     }
-
 }

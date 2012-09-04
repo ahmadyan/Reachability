@@ -28,7 +28,7 @@
 #include "hyperbox.h"
 namespace reachability{
     int count = 0;
-    int countMax = 1 ;
+    int countMax = 10 ;
     //Constructor, Sets the system & create the space-partitioning tree data structure
     Algorithm::Algorithm(ReachabilityAlgorithm m,System* _system, double _errorBound){
         mode = m;
@@ -109,13 +109,22 @@ namespace reachability{
             bool reachable = false;
             if(node->isInitialState) reachable = true ;
             vector<Node*> neighbors = node->getNeighbors(node);
+            cout << "********************************" << endl ;
+            cout << _node->toString() << endl ;
+            cout << "Checking neighbors for reachability " << neighbors.size() <<  endl ;
             for(int i=0; i<neighbors.size(); i++){
+                cout << "Neighbors #" << neighbors[i]->toString() << endl ;
                 if(neighbors[i]->isReachable){
-                    if( system->isReachable(neighbors[i], node) )
+                    if( system->isReachable(neighbors[i], node) ){
                         reachable = true ;
+                        cout << "Node is reachable from " << neighbors[i]->toString() << endl ;
+                    }
+                        
                 }
             }
             node->isReachable = reachable;
+            cout << "Reachability decision: " << reachable << endl;
+            cout << "********************************" << endl ;
         }
     }
     
@@ -196,7 +205,19 @@ namespace reachability{
                 //function divideANode also sets the currentError.
                 divideANode(node);
                 vector<Node*> kids= node->getChildren();
-                for(unsigned int i=0;i<kids.size();i++){
+                
+                cout << "Listing kids " <<  kids.size() << endl ;
+                for(int i=0;i<kids.size();i++){
+                    Polytope* p = (Polytope*)kids[i];
+                    cout << p->toString() << endl ;
+                    cout << "Listing neighbors for " << p->neighbors.size() << endl ;
+                    for(int j=0;j<p->neighbors.size();j++ ){
+                        cout << p->neighbors[j]->toString() << endl ;
+                    }
+                    cout << "----131-2312----123123----" << endl << endl << endl ;
+                }
+                
+                for(int i=0;i<kids.size();i++){
                     q.push(kids[i]);
                 }
             }

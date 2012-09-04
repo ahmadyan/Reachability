@@ -1,0 +1,5 @@
+
+    Sep-2-2012
+    - There is a bug in updating neighbors. For example, neighbors to node 7 are 8, 10 & 4. But the program only counts 8 and 10.
+    - There is a bug in checking for reachability. Node 10 is not reachable from any other node.But the program marks it as reachable. 
+        -- reachability states that node 10 is reachable from node 7. bug!

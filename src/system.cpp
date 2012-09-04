@@ -44,19 +44,19 @@ namespace reachability{
             dim  =   2;
             min = new double[dim];
             max = new double[dim];
-            min[0] = -6 ;  //xmin
-            min[1] = -6 ;  //ymin
-            max[0] =  6 ;  //xmax
-            max[1] =  6 ;  //ymax
+            min[0] = -10 ;  //xmin
+            min[1] = -10 ;  //ymin
+            max[0] =  10 ;  //xmax
+            max[1] =  10 ;  //ymax
             
             double* init_min = new double[dim];
             double* init_max = new double[dim];
             
             init_min[0] = -3 ;  //xmin
-            init_max[0] = -2.5 ;  //xmax
+            init_max[0] = -2.8 ;  //xmax
             
             init_min[1] =  3 ;  //ymin
-            init_max[1] =  3.5 ;  //ymax
+            init_max[1] =  3.1 ;  //ymax
             //TODO: should be replaced with a general object type
             init = new Hyperbox(NULL, dim, init_min, init_max);
             
@@ -349,9 +349,10 @@ namespace reachability{
         
         functionSign sign = reachabilityUsingSampling(interval[0], interval[1]);
         
+        //This is a buggy code.
         if( (sign==posnegative) ||
-            ((sign==positive)&&(position1==-1))||
-            ((sign==negative)&&(position1==+1))
+            ((sign==positive)&&(position2==+1))||
+            ((sign==negative)&&(position2==-1))
            ){
             return true ;
         }else{
@@ -363,30 +364,23 @@ namespace reachability{
     functionSign System::reachabilityUsingSampling(Point* p1, Point* p2){
         functionSign result = undefined; 
         int samples=100;
-        double* z = new double[2];
         double* f = new double[2];
+        
         Point* tmp = new Point(2);
         double p1x = p1->getData(0);
         double p1y = p1->getData(1);
         double p2x = p2->getData(0);
         double p2y = p2->getData(1);
-
         for(int i=1;i<samples+1;i++){
             //sample point
-            double x = p1x + i*(p2x-p1x)/(samples+1);
-            double y = p1y + i*(p2y-p1y)/(samples+1);
-            
-            //trajectory @ sample point
-            z[0] = x;
-            z[1] = y;
-            func(0, z, f, &mu);
-            double dx = f[0] ;
-            double dy = f[1] ;
-            double xf = x+dx ;
-            double yf = y+dy ;
-            tmp->setData(0, xf);
-            tmp->setData(1, yf);
-            
+            double y[2] = { p1x + i*(p2x-p1x)/(samples+1), p1y + i*(p2y-p1y)/(samples+1) };
+            gsl_odeiv2_system sys = {func, jac, 2, &mu};
+            gsl_odeiv2_driver * d = gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd, 1e-6, 1e-6, 0.0);
+            double t = 0.0, ti = 1;
+            gsl_odeiv2_driver_apply (d, &t, ti, y);
+            gsl_odeiv2_driver_free (d);
+            tmp->setData(0, y[0]);
+            tmp->setData(1, y[1]);
             
             //positition of the trejectory w.r.t p1-p2 line
             int position1 = geometry::position(p1, p2, tmp) ;
@@ -408,6 +402,7 @@ namespace reachability{
             }
             
         }
+        delete f;
         return result ;
     }
     
