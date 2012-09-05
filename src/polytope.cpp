@@ -308,6 +308,7 @@ namespace reachability {
     void Polytope::divide(System* system){
         divided=true;
 
+
         // Part 1: Find the vertexes of new polytopes.
 
         //First find the center point of the polytope
@@ -316,15 +317,22 @@ namespace reachability {
         //Compute direction of vector flow at the center point using system
         double* trajectoryVector1 = system->getVector(center->getData());
         if(trajectoryVector1[0]==0 && trajectoryVector1[1]==0){
-        	trajectoryVector1[0]= 0.27 ; // ((double) rand() / (RAND_MAX+1)) ;
-        	trajectoryVector1[1]= 0.86  ;
+        	trajectoryVector1[0]= .1 ; // ((double) rand() / (RAND_MAX+1)) ;
+        	trajectoryVector1[1]= 0.76  ;
         }
+
 
         //trajectory2 is perpendicular vector to trajectory 1 at center point.
         //keep in mind that there are infinite orthogonal vector to any vector,
         //in GS, we first create the plane by generating a random vector, then return the result.
         double* trajectoryVector2 = geometry::GramSchmidt(dim, trajectoryVector1) ;
         
+        if(id==3){
+        	cout << "dumping info for 3" << endl ;
+        	cout << center->toString()  << endl ;
+        	cout << trajectoryVector1[0] << " " <<  trajectoryVector1[1] << endl ;
+        	cout << trajectoryVector2[0] << " " <<  trajectoryVector2[1] << endl ;
+        }
         //Todo: using points will increase the pointID, we should not use points here. use some other thing in here later.
         //To find intersection points with the polytope, first we need to create a line. Since this line cannot be unlimited
         //and must be bigger than the polytope, we create a line from the edge-to-edge of the state-space with the selected slope.

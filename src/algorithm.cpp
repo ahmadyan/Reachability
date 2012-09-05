@@ -28,7 +28,7 @@
 #include "hyperbox.h"
 namespace reachability{
     int count = 0;
-    int countMax = 10 ;
+    int countMax = 26  ;
     //Constructor, Sets the system & create the space-partitioning tree data structure
     Algorithm::Algorithm(ReachabilityAlgorithm m,System* _system, double _errorBound){
         mode = m;
@@ -88,6 +88,9 @@ namespace reachability{
             for(unsigned int i=0;i<kids.size();i++){
                 checkReachability(kids[i]);
             }
+            for(unsigned int i=0;i<kids.size();i++){
+                            checkReachability(kids[i]);
+                        }
         }
     }
     
@@ -109,23 +112,16 @@ namespace reachability{
             bool reachable = false;
             if(node->isInitialState) reachable = true ;
             vector<Node*> neighbors = node->getNeighbors(node);
-            cout << "********************************" << endl ;
-            cout << _node->toString() << endl ;
-            cout << "Checking neighbors for reachability " << neighbors.size() <<  endl ;
             for(int i=0; i<neighbors.size(); i++){
-                cout << "Neighbors #" << neighbors[i]->toString() << endl ;
                 if(neighbors[i]->isReachable){
                     if( system->isReachable(neighbors[i], node) ){
                         reachable = true ;
-                        cout << "Node is reachable from " << neighbors[i]->toString() << endl ;
                     }
                         
                 }
             }
             node->isReachable = reachable;
-            cout << "Reachability decision: " << reachable << endl;
-            cout << "********************************" << endl ;
-        }
+         }
     }
     
     Tree* Algorithm::getTree(){
@@ -143,8 +139,6 @@ namespace reachability{
             Hyperbox* node = (Hyperbox*) _node ;
             if( currentError <= errorBound ) return false ;
             if( !node->isReachable ) return false;
-            
-            
             bool nodeIsAdjacentToUnreachableRegion = false; 
             //We assume that the outside of the defined space is unreachable. We need this assumption for the initialization of the algorithm
             if(node->min[0]==system->getMin(0)) nodeIsAdjacentToUnreachableRegion = true ;
@@ -205,18 +199,6 @@ namespace reachability{
                 //function divideANode also sets the currentError.
                 divideANode(node);
                 vector<Node*> kids= node->getChildren();
-                
-                cout << "Listing kids " <<  kids.size() << endl ;
-                for(int i=0;i<kids.size();i++){
-                    Polytope* p = (Polytope*)kids[i];
-                    cout << p->toString() << endl ;
-                    cout << "Listing neighbors for " << p->neighbors.size() << endl ;
-                    for(int j=0;j<p->neighbors.size();j++ ){
-                        cout << p->neighbors[j]->toString() << endl ;
-                    }
-                    cout << "----131-2312----123123----" << endl << endl << endl ;
-                }
-                
                 for(int i=0;i<kids.size();i++){
                     q.push(kids[i]);
                 }

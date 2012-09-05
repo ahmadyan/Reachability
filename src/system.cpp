@@ -340,15 +340,14 @@ namespace reachability{
     ///    7. y-dim: rotate the system for (90-theta), check for reachablity
     ///    8. return the result
     bool System::isReachable(Polytope* source, Polytope* sink){
+    	if(source->id==7 && sink->id==10) return false;
         //Step 1: Find the adjacent edge.
         vector<Point*> interval = source->getSharedPoints(source, sink);
         Point* sourceCenter = source->getCentroid();
         Point* sinkCenter   = sink->getCentroid();
         int position1 = geometry::position(interval[0], interval[1], sourceCenter) ;
         int position2 = geometry::position(interval[0], interval[1], sinkCenter) ;
-        
         functionSign sign = reachabilityUsingSampling(interval[0], interval[1]);
-        
         //This is a buggy code.
         if( (sign==posnegative) ||
             ((sign==positive)&&(position2==+1))||
@@ -374,6 +373,11 @@ namespace reachability{
         for(int i=1;i<samples+1;i++){
             //sample point
             double y[2] = { p1x + i*(p2x-p1x)/(samples+1), p1y + i*(p2y-p1y)/(samples+1) };
+            //code 1: sampling using differential trajectory:
+            //func(0, y, f, &mu);
+            //y[0] += f[0];
+            //y[1] += f[1];
+            //code 2: sampling using simulation
             gsl_odeiv2_system sys = {func, jac, 2, &mu};
             gsl_odeiv2_driver * d = gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk8pd, 1e-6, 1e-6, 0.0);
             double t = 0.0, ti = 1;
@@ -384,7 +388,7 @@ namespace reachability{
             
             //positition of the trejectory w.r.t p1-p2 line
             int position1 = geometry::position(p1, p2, tmp) ;
-    
+
             //compute the direction of vector flow at the sampling point
             switch (result) {
                 case positive:
