@@ -61,5 +61,6 @@ namespace reachability {
         void removeNeighbor(Polytope* p);
         void addNeighbor(Polytope* p);
         void updateNeighbors();
+        std::string dumpNeighbors();
     };
 }

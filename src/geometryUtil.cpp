@@ -193,7 +193,11 @@ namespace geometry{
         else return false;
     }
     
-    double distance(Point* a, Point* b){
+    //Wow! there was a bug in my code, apparantly there is a function in std names space that returns the distance between iterators.
+    //and gcc took that function instead of using my geometry::distance (without using the namespace geometry).
+    //so this caused a lot of problems!
+    //Now I changed it to euclideanDistance just to be sure. I hope there is no more function named euclideanDistance in c++ anymore. s
+    double euclideanDistance(Point* a, Point* b){
         double x1 = a->getData(0);  
         double y1 = a->getData(1);
         double x2 = b->getData(0);
@@ -207,7 +211,7 @@ namespace geometry{
     //This is O(n^2) alg, for a more efficient (ON(nlogn):
     //Sort all edges of polygons. In sorting function taking couples of edges, first rule is by direction, and second rule (apllied if directions are the same) is by shift. This way you'll get sets of edges lying on the same line in O(n*log(n)). In such set you can make task one-dimensional and find overlappings in linear (of the number of overlappings) time - just sort ends of line segments and support set of segments owning current position while moving along the line). Resulted complexity is O(n*log(n)+m), n - number of edges, m -number of couples of adjecent edjes. To prevent problems with extremal angles of edges don't divide enything - use vector and scalar products and compare things according to them.
     //From: http://forums.codeguru.com/showthread.php?344401-Determining-polygon-adjacency
-    bool lineSegmentsOverlap(Point* a, Point* b, Point* c, Point* d){
+   bool lineSegmentsOverlap(Point* a, Point* b, Point* c, Point* d){
         bool pointsAreOnTheSameLine = false;
         double ax = a->getData(0);        double ay = a->getData(1);
         double bx = b->getData(0);        double by = b->getData(1);

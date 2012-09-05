@@ -42,7 +42,17 @@ int main (void){
     alg->reachabilityAlgorithm();
 
     reachability::Tree* tree = (reachability::Tree*)alg->getTree();
-      
+
+
+    for(int i=4;i<=10;i++){
+    	cout << ((reachability::Polytope*)(tree->getNodeByID(i)))->dumpNeighbors() << endl ;
+    }
+
+    cout << "Is Sharing an Edge? " <<
+    		((reachability::Polytope*)(tree->getNodeByID(7)))->IsSharingAnEdge(
+    		((reachability::Polytope*)(tree->getNodeByID(4))),
+    		((reachability::Polytope*)(tree->getNodeByID(7))))
+    		<< endl ;
     
     cout << endl << endl << endl << endl << tree->dump() << endl ;  
     plotter->execute(tree->drawTree());

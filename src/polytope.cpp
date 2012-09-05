@@ -236,17 +236,20 @@ namespace reachability {
             nodes[i]->addNeighbor(nodes[(i==0?nodes.size()-1:i-1)]);
     	}
         for(int i=0;i<neighbors.size();i++){
-            ((Polytope*)(neighbors[i]))->removeNeighbor(this);
+        	Polytope* neighbor = (Polytope*)(neighbors[i]);
+        	neighbor->removeNeighbor(this);
             //Update each of these neighbors and add the new kids
             for(int j=0;j<nodes.size();j++){
-            	if( IsSharingAnEdge(((Polytope*)(neighbors[i])), nodes[j]) ){
-            		nodes[j]->addNeighbor(((Polytope*)(neighbors[i])));
-            		((Polytope*)(neighbors[i]))->addNeighbor(nodes[j]);
+            	if( IsSharingAnEdge(neighbor, nodes[j]) ){
+            		nodes[j]->addNeighbor(neighbor);
+            		neighbor->addNeighbor(nodes[j]);
             	}
             }
         }
     }
     
+    //this methods find a common face between two given polytope, if there is no such face (i.e. polytopes are not adjacent)
+    //the first pair of result will be false, other wise, the result would be (true, common face points)
     pair<bool, vector<Point*> > Polytope::findCommonEdge(Polytope* p1, Polytope* p2){
         vector<Point*> v;
         for(int i=0;i<p1->points.size(); i++){
@@ -256,32 +259,32 @@ namespace reachability {
                 Point* b = p1->points[((i==p1->points.size()-1)?0:i+1)];
                 Point* c = p2->points[j];
                 Point* d = p2->points[((j==p2->points.size()-1)?0:j+1)];
+
                 if(geometry::lineSegmentsOverlap(a, b, c, d)){
-                    vector<Point*> v ;
-                    if( geometry::eq(distance(a,b), distance(a,c)+ distance(c,b))){//c is between a-b
-                        if(std::find(v.begin(), v.end(), d)== v.end())
-                            v.push_back(c);
-                    }
-                    if( geometry::eq(distance(a,b), distance(a,d)+ distance(d,b))){// d is between a-b
-                        if(std::find(v.begin(), v.end(), d)== v.end())
-                            v.push_back(d);
-                    }
-                    if( geometry::eq(distance(c,d), distance(c,a)+ distance(a,d))){// a is between c-d
-                        if(std::find(v.begin(), v.end(), a)== v.end())
-                            v.push_back(a);
-                    }
-                    if( geometry::eq(distance(c,d), distance(c,b)+ distance(b,d))){// b is between c-d
-                        if(std::find(v.begin(), v.end(), b)== v.end())
-                            v.push_back(b);
-                    }
-                    if(v.size()==2){
-                        return make_pair(true, v);
-                    }
+                	if( geometry::eq(geometry::euclideanDistance(a,b), geometry::euclideanDistance(a,c)+ geometry::euclideanDistance(c,b))){//c is between a-b
+                		if(std::find(v.begin(), v.end(), d)== v.end())
+                			v.push_back(c);
+                	}
+                	if( geometry::eq(geometry::euclideanDistance(a,b), geometry::euclideanDistance(a,d)+ geometry::euclideanDistance(d,b))){// d is between a-b
+                		if(std::find(v.begin(), v.end(), d)== v.end())
+                			v.push_back(d);
+                	}
+                	if( geometry::eq(geometry::euclideanDistance(c,d), geometry::euclideanDistance(c,a)+ geometry::euclideanDistance(a,d))){// a is between c-d
+                		if(std::find(v.begin(), v.end(), a)== v.end())
+                			v.push_back(a);
+                	}
+                	if( geometry::eq(geometry::euclideanDistance(c,d), geometry::euclideanDistance(c,b)+ geometry::euclideanDistance(b,d))){// b is between c-d
+                		if(std::find(v.begin(), v.end(), b)== v.end())
+                			v.push_back(b);
+                	}
+                	if(v.size()==2){
+                		return make_pair(true, v);
+                	}
                 }
             }
         }
         if(v.size()!=2){
-            return make_pair(false, NULL);
+        	return make_pair(false, NULL);
         }
     }
     
@@ -406,6 +409,16 @@ namespace reachability {
         return ss.str(); 
     }
     
+    std::string Polytope::dumpNeighbors(){
+            stringstream ss ;
+            ss << "Listing neighbors for " << endl ;
+            ss << toString() << endl  ;
+            for(int i=0;i<neighbors.size();i++){
+                ss << neighbors[i]->getID() << " " ;
+            }
+            return ss.str();
+        }
+
     // Checks the neighbors list, If node is inside the neighbors list, return's true.
     bool Polytope::isAdjacent(Node* node){
         for(int i=0;i<neighbors.size();i++){

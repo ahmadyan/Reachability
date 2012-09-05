@@ -29,7 +29,7 @@ namespace geometry{
     Point* intersectionPoint(Point* p1, Point* p2, Point* p3, Point* p4);
     pair<double, double> solveLine(Point* , Point* );
     double* GramSchmidt(int dim, double* v1);
-    double distance(Point* a, Point* b);
+    double euclideanDistance(Point* a, Point* b);
     bool eq(double, double);
     void unit_test();
     bool lineSegmentsOverlap(Point* a, Point* b, Point* c, Point* d);
