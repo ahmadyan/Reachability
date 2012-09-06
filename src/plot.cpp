@@ -123,6 +123,7 @@ void Plotter::waitForKey(){
 
 void Plotter::saveToPdf(string path){
     stringstream cmdstr;
+    cmdstr << " set term post \n" ;
     cmdstr << " set output \"" << path << "\"\n" ;
     cmdstr << " replot \n" ;
     fprintf(gnuplotPipe, cmdstr.str().c_str());

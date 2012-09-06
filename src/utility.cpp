@@ -24,6 +24,8 @@
 namespace utility {
 
     using namespace std;
+    double initial_time = clock(), final_time=0, total_time=0;
+    time_t t1=0, t2=0, t3=0;
     
     //
     // Generate a random number between 0 and 1
@@ -60,4 +62,19 @@ namespace utility {
     void seed(){
         srand(time(0));
     }
+
+    void tick(){
+    	initial_time=clock();
+    	time(&t1);
+    }
+
+    void tock(){
+    	final_time = clock();
+    	total_time = (double)(final_time-initial_time) / (double) CLOCKS_PER_SEC ;
+    	time(&t2);
+    	t3=t2-t1;
+    	if(t3>1000) total_time=t3 ;
+    	cout << total_time << " seconds " << endl ;
+    }
+
 }

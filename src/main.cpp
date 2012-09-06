@@ -28,7 +28,7 @@
 #include "tree.h"
 #include "polytope.h"
 #include "point.h"
-
+#include "utility.h"
 const int simulationSampleSize = 2;
 const double errorBound=0.1;
 
@@ -39,8 +39,9 @@ int main (void){
     Plotter* plotter = new Plotter(gnuPlot, system);
     //reachability::Algorithm* alg = new reachability::Algorithm(reachability::Alg_hyperbox, system, errorBound);
     reachability::Algorithm* alg = new reachability::Algorithm(reachability::Alg_polytope, system, errorBound);
+    utility::tick();
     alg->reachabilityAlgorithm();
-
+    utility::tock();
     reachability::Tree* tree = (reachability::Tree*)alg->getTree();
 
     cout << ((reachability::Polytope*)(tree->getNodeByID(11)))->dumpNeighbors() << endl ;
@@ -56,9 +57,9 @@ int main (void){
     	vector<pair<double, double> > trace = system->simulate();
     	plotter->drawArray(trace);
     }
-    
-    plotter->execute(system->generateVectorField());
     plotter->saveToPdf("test.ps");
+    plotter->execute(system->generateVectorField());
+
     plotter->close();
     
     return 0;
