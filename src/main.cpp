@@ -44,11 +44,11 @@ int main (void){
     utility::tock();
     reachability::Tree* tree = (reachability::Tree*)alg->getTree();
 
-    cout << ((reachability::Polytope*)(tree->getNodeByID(11)))->dumpNeighbors() << endl ;
-    cout << "isReachable 11,12 " << system->isReachable(tree->getNodeByID(12), tree->getNodeByID(11)) << endl ;
-    cout << "isReachable 11,14 " << system->isReachable(tree->getNodeByID(14), tree->getNodeByID(11))<< endl ;
+    //cout << ((reachability::Polytope*)(tree->getNodeByID(11)))->dumpNeighbors() << endl ;
+    //cout << "isReachable 11,12 " << system->isReachable(tree->getNodeByID(12), tree->getNodeByID(11)) << endl ;
+    //cout << "isReachable 11,14 " << system->isReachable(tree->getNodeByID(14), tree->getNodeByID(11))<< endl ;
 
-    plotter->execute(tree->drawTree());
+    plotter->execute(tree->draw(10));
     //delete tree;
     
 
@@ -57,7 +57,7 @@ int main (void){
     	vector<pair<double, double> > trace = system->simulate();
     	plotter->drawArray(trace);
     }
-    plotter->saveToPdf("test.ps");
+    //plotter->saveToPdf("test.ps");
     plotter->execute(system->generateVectorField());
 
     plotter->close();

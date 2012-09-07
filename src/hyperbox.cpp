@@ -149,28 +149,35 @@ namespace reachability{
         return false;
     }
     
-    
-    string Hyperbox::draw(){
+    string Hyperbox::draw(int x){
         stringstream str ;
-        if(isDivided()){
-            str << upLeft->draw();
-            str << upRight->draw();
-            str << downLeft->draw();
-            str << downRight->draw();
-        }else{
-            if(isInitialState){
-                str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1] 
-                << " fc rgb \"purple\"" << endl ;            
-            }else if(isReachable){
-                str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1] 
-                << " fc rgb \"gold\"" << endl ;
+            if(isDivided()){
+                str << upLeft->draw(x);
+                str << upRight->draw(x);
+                str << downLeft->draw(x);
+                str << downRight->draw(x);
             }else{
-                str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1] 
-                << " fc lt 2" << endl ;
-                str << "set obj " << id << " fillstyle empty border -1 front " << endl ;  
+            	if(id==x){
+            		   str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1]
+            		                    << " fc rgb \"red\"" << endl ;
+            	}if(isInitialState){
+                    str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1]
+                    << " fc rgb \"purple\"" << endl ;
+                }else if(isReachable){
+                    str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1]
+                    << " fc rgb \"gold\"" << endl ;
+                }else{
+                    str << "set object " << id << " rect from " << min[0] << "," << min[1] << " to " << max[0] << "," << max[1]
+                    << " fc lt 2" << endl ;
+                    str << "set obj " << id << " fillstyle empty border -1 front " << endl ;
+                }
             }
-        }
-        return str.str();
+            return str.str();
+
+    }
+
+    string Hyperbox::draw(){
+    	return draw(-1);
     }
     
     string Hyperbox::dump(){

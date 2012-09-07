@@ -34,11 +34,14 @@ namespace reachability {
     int KDTree::getTreeType(){
         return 1;
     }
+    std::string KDTree::draw(int x){
+    	 std::stringstream str ;
+    	        str << root->draw(x) << endl ;
+    	        return str.str();
+    }
     
-    std::string KDTree::drawTree(){
-        std::stringstream str ;
-        str << root->draw() << endl ;
-        return str.str();
+    std::string KDTree::draw(){
+       return draw(-1);
     }
     
     std::string KDTree::dump(){

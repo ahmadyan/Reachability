@@ -31,9 +31,14 @@ namespace reachability {
         return root->getNeighbors(node); //Recursively checks for neighboring nodes
     }
     
-    std::string Tree::drawTree(){
+    std::string Tree::draw(){
+    	return draw(-1);
+        }
+
+    //calling the draw function by id will fill that specific poly in red.
+    std::string Tree::draw(int x){
         std::stringstream str ;
-        str << root->draw() << endl ;
+        str << root->draw(x) << endl ;
         return str.str();
     }
     

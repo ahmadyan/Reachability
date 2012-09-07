@@ -48,6 +48,7 @@ namespace reachability {
         virtual bool isAdjacent(Node*)=0;        
         virtual std::vector<Node*> getChildren()=0;
         Node* getNodeByID(int _id);
+        virtual std::string draw(int)=0;
         virtual std::string draw()=0;
         virtual std::string dump()=0;
     };

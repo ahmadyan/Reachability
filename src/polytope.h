@@ -52,6 +52,7 @@ namespace reachability {
         virtual bool isAdjacent(Node*);        
         virtual std::string draw();
         virtual std::string dump();
+        virtual std::string draw(int);
         std::vector<Node*> getChildren();
         vector<Point*> findIntersectionWithBorders(double* u2, System* system, Point* center);
         void test();

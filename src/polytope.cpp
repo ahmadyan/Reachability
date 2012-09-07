@@ -327,12 +327,6 @@ namespace reachability {
         //in GS, we first create the plane by generating a random vector, then return the result.
         double* trajectoryVector2 = geometry::GramSchmidt(dim, trajectoryVector1) ;
         
-        if(id==3){
-        	cout << "dumping info for 3" << endl ;
-        	cout << center->toString()  << endl ;
-        	cout << trajectoryVector1[0] << " " <<  trajectoryVector1[1] << endl ;
-        	cout << trajectoryVector2[0] << " " <<  trajectoryVector2[1] << endl ;
-        }
         //Todo: using points will increase the pointID, we should not use points here. use some other thing in here later.
         //To find intersection points with the polytope, first we need to create a line. Since this line cannot be unlimited
         //and must be bigger than the polytope, we create a line from the edge-to-edge of the state-space with the selected slope.
@@ -446,15 +440,29 @@ namespace reachability {
         return v;
     }
     
+
     std::string Polytope::draw(){
+    	return draw(-1);
+    }
+
+    //calling the draw function by id will fill that specific poly in red.
+    std::string Polytope::draw(int __id){
         stringstream str ;
         if(isDivided()){
             vector<Node*> kids = getChildren() ;
             for(int i=0;i<kids.size();i++){
-                str << kids[i]->draw();
+                str << kids[i]->draw(__id);
             }
         }else{
-            if(isInitialState){
+        	if(id==__id){//for debugging purposes.
+        		str << "set object " << id << " polygon from " << points[0]->getData(0) << "," << points[0]->getData(1) ;
+        		                for(int i=1;i<points.size();i++){
+        		                    str << " to " << points[i]->getData(0) << "," << points[i]->getData(1) ;
+        		                }
+        		                                str << " to " << points[0]->getData(0) << "," << points[0]->getData(1) ;
+        		                str << endl;
+        		                str << "set object " << id <<" fc rgb \"red\" fillstyle solid 1.0 border lt -1" << endl ;
+        	}else if(isInitialState){
                 str << "set object " << id << " polygon from " << points[0]->getData(0) << "," << points[0]->getData(1) ;
                 for(int i=1;i<points.size();i++){
                     str << " to " << points[i]->getData(0) << "," << points[i]->getData(1) ;  

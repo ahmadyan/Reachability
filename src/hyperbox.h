@@ -53,6 +53,7 @@ namespace reachability{
         std::string toString();
         bool isAdjacent(Node*);        
         std::string draw();
+        std::string draw(int);
         std::string dump();
         std::vector<Node*> getChildren();
     };

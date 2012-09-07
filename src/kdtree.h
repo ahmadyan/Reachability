@@ -27,7 +27,8 @@ namespace reachability {
         ~KDTree();
         
         virtual int getTreeType();
-        std::string drawTree();
+        std::string draw();
+        std::string draw(int); //calling the draw function by id will fill that specific poly in red.
         std::string dump();
     };
 }

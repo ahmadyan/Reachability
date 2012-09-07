@@ -31,7 +31,8 @@ namespace reachability {
             virtual int getTreeType();
             Node* getRoot();
             virtual std::vector<Node*> getNeighbors(Node* node);
-            virtual std::string drawTree();
+            virtual std::string draw();
+            virtual std::string draw(int); //calling the draw function by id will fill that specific poly in red.
             virtual std::string dump();
             Node* getNodeByID(int _id);
         };

@@ -40,12 +40,17 @@ namespace reachability {
     int BSPTree::getTreeType(){
         return 2;
     }
-    
-    std::string BSPTree::drawTree(){
+    //calling the draw function by id will fill that specific poly in red.
+    std::string BSPTree::draw(int x){
         std::stringstream str ;
-        str << root->draw() << endl ;
+        str << root->draw(x) << endl ;
         return str.str();
     }
+
+    std::string BSPTree::draw(){
+    	return draw(-1);
+    }
+
     std::string BSPTree::dump(){
         std::stringstream str ;
         str << root->dump() << endl ;

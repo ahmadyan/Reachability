@@ -28,7 +28,7 @@
 #include "hyperbox.h"
 namespace reachability{
     int count = 0;
-    int countMax = 26  ;
+    int countMax = 7  ;
     //Constructor, Sets the system & create the space-partitioning tree data structure
     Algorithm::Algorithm(ReachabilityAlgorithm m,System* _system, double _errorBound){
         mode = m;
@@ -50,6 +50,10 @@ namespace reachability{
     Algorithm::~Algorithm(){}
     
     void Algorithm::divideANode(Node* _node){
+    	count++;
+    	if(count==7){
+    		cout << "[7THCOUNT] dividing a node:" << _node->toString() << endl ;
+    	}
         if( mode==Alg_hyperbox ){
             Hyperbox* node = (Hyperbox*) _node ;
             node->divide(system);
@@ -160,7 +164,6 @@ namespace reachability{
    
         }else if(mode==Alg_polytope){
             Polytope* node = (Polytope*) _node ;
-            count++;
             if(count>countMax) return false;
             if( currentError <= errorBound ) return false ;
             if( !node->isReachable ) return false;
