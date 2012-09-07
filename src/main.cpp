@@ -48,7 +48,7 @@ int main (void){
     //cout << "isReachable 11,12 " << system->isReachable(tree->getNodeByID(12), tree->getNodeByID(11)) << endl ;
     //cout << "isReachable 11,14 " << system->isReachable(tree->getNodeByID(14), tree->getNodeByID(11))<< endl ;
 
-    plotter->execute(tree->draw(10));
+    plotter->execute(tree->draw());
     //delete tree;
     
 

@@ -71,6 +71,9 @@ namespace geometry{
         return d;
     }
     
+    //This is a method from CLRS
+    //There was a bug in the original version of this, I replaced all of if(d1==0) with if( eq(d1,0) ) and so on.
+    //This bug took 4 hours to fix.
     bool intersection(Point* p1, Point* p2, Point* p3, Point* p4){
         double d1 = direction(p3,p4,p1);
         double d2 = direction(p3,p4,p2);
@@ -82,13 +85,13 @@ namespace geometry{
            (((d3>0)&&(d4<0)) || ((d3<0)&&(d4>0)))
            ){
             return true;
-        }else if(d1==0 && onSegment(p3, p4, p1)){
+        }else if(eq(d1,0) && onSegment(p3, p4, p1)){
             return true;
-        }else if(d2==0 && onSegment(p3, p4, p2)){
+        }else if(eq(d2,0) && onSegment(p3, p4, p2)){
             return true;
-        }else if(d3==0 && onSegment(p1, p2, p3)){
+        }else if(eq(d3,0) && onSegment(p1, p2, p3)){
             return true;
-        }else if(d4==0 && onSegment(p1, p2, p4)){
+        }else if(eq(d4,0) && onSegment(p1, p2, p4)){
             return true;
         }else{
             return false;
@@ -189,7 +192,7 @@ namespace geometry{
     }
     
     bool eq(double a, double b){
-        if( abs(a-b)<1e-6) return true;
+        if( abs(a-b)<1e-4) return true;
         else return false;
     }
     

@@ -307,8 +307,6 @@ namespace reachability {
     //TODO: This function is only valid for 2-dimensional systems, extend this to higher dimensions
     void Polytope::divide(System* system){
         divided=true;
-
-
         // Part 1: Find the vertexes of new polytopes.
 
         //First find the center point of the polytope
@@ -336,7 +334,6 @@ namespace reachability {
         vector<Point*> v1 = findIntersectionWithBorders(trajectoryVector1, system, center);
         vector<Point*> v2 = findIntersectionWithBorders(trajectoryVector2, system, center);
 
-
         vector< pair<Point*, PointType> > p;
         for(int i=0;i<points.size(); i++){
         	p.push_back(make_pair(points[i], PolyOriginalPoint));
@@ -344,6 +341,7 @@ namespace reachability {
         
         vector<int> w1; //w1 is the array of new intersection points of v1 lines with the polytopes
         vector<int> w2; //w2 is the array of new intersection points of v2 lines with the polytopes
+
         for(unsigned int i=0;i<points.size()-1;i++){
             if(geometry::intersection(v1[0], v1[1], points[i], points[i+1])){
                 w1.push_back(i);
@@ -363,7 +361,6 @@ namespace reachability {
         p.push_back(make_pair( geometry::intersectionPoint(points[w1[1]], (w1[1]==points.size()-1?points[0]:points[w1[1]+1]), v1[0], v1[1]) , PolyExtensionPoint));
         p.push_back(make_pair( geometry::intersectionPoint(points[w2[0]], (w2[0]==points.size()-1?points[0]:points[w2[0]+1]), v2[0], v2[1]) , PolyExtensionPoint));
         p.push_back(make_pair( geometry::intersectionPoint(points[w2[1]], (w2[1]==points.size()-1?points[0]:points[w2[1]+1]), v2[0], v2[1]) , PolyExtensionPoint));
-
 
         //Sort p in clock-wise order based on center point
         for(int i=0;i<p.size();i++){
