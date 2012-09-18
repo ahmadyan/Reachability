@@ -29,7 +29,7 @@
 #include "polytope.h"
 #include "point.h"
 #include "utility.h"
-const int simulationSampleSize = 2;
+const int simulationSampleSize = 1;
 const double errorBound=0.1;
 
 int main (void){    
@@ -51,13 +51,14 @@ int main (void){
     plotter->execute(tree->draw());
     //delete tree;
     
-
+    utility::tick();
     //Code for drawing a single transient
     for(int i=0;i<simulationSampleSize;i++){
     	vector<pair<double, double> > trace = system->simulate();
     	plotter->drawArray(trace);
     }
-    //plotter->saveToPdf("test.ps");
+    utility::tock();
+    plotter->saveToPdf("test.ps");
     plotter->execute(system->generateVectorField());
 
     plotter->close();

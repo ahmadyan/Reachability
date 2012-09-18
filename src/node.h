@@ -26,6 +26,7 @@ namespace reachability {
     class Node{
     public:
         int id;
+        int level;
         static int nodeCount ;
         int dim;       
         Node* parent ;
@@ -40,7 +41,7 @@ namespace reachability {
         int getID();
         void setAsInitialState();
         bool isDivided();
-        
+        void pushNodes(std::vector<Node*>*, int);
         virtual std::vector<Node*> getNeighbors(Node*)=0;
         virtual bool contain(Node*)=0;
         virtual void divide(System*)=0;

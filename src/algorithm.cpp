@@ -28,7 +28,8 @@
 #include "hyperbox.h"
 namespace reachability{
     int count = 0;
-    int countMax = 100  ;
+    int countMax = 249  ;
+    int polyCount = 0;
     //Constructor, Sets the system & create the space-partitioning tree data structure
     Algorithm::Algorithm(ReachabilityAlgorithm m,System* _system, double _errorBound){
         mode = m;
@@ -51,6 +52,7 @@ namespace reachability{
     
     void Algorithm::divideANode(Node* _node){
     	count++;
+    	polyCount += 4;
         if( mode==Alg_hyperbox ){
             Hyperbox* node = (Hyperbox*) _node ;
             node->divide(system);
@@ -204,6 +206,92 @@ namespace reachability{
                 }
             }
         }
+        if(true){
+        cout << "some statistics about SPT:" << endl ;
+        vector<Node*> *v = tree->getNodes();
+
+        double levelMin = 1000 ;
+        double levelMax = 0    ;
+        double levelTotal = 0 ;
+        double volumeMin = 10000;
+        double volumeMax = 0    ;
+        double volumeTotal = 0 ;
+        double leafVolumeMin = 10000 ;
+        double leafVolumeMax = 0 ;
+        double leafVolumeTotal = 0 ;
+        double reachableLeafVolumeMin = 10000 ;
+        double reachableLeafVolumeMax = 0 ;
+        double reachableLeafVolumeTotal = 0 ;
+        int leaf=0;
+        int reachableLeaf=0;
+        int boundryPoly=0;
+        double boundryReachableLeafVolumeMin = 10000 ;
+        double boundryReachableLeafVolumeMax = 0 ;
+        double boundryReachableLeafVolumeTotal = 0 ;
+        for(int i=0;i<v->size();i++){
+        	if( v->at(i)->isDivided() == false ){//this is a leaf node.
+        		leaf++;
+        		leafVolumeTotal += ((Polytope*)(v->at(i)))->getVolume() ;
+        		if(leafVolumeMin>((Polytope*)(v->at(i)))->getVolume()) leafVolumeMin = ((Polytope*)(v->at(i)))->getVolume() ;
+        		if(leafVolumeMax<((Polytope*)(v->at(i)))->getVolume()) leafVolumeMax = ((Polytope*)(v->at(i)))->getVolume() ;
+        		if( v->at(i)->isReachable == true){ //this is a reachable leaf node
+        			reachableLeaf++;
+        			reachableLeafVolumeTotal += ((Polytope*)(v->at(i)))->getVolume() ;
+        			if(reachableLeafVolumeMin>((Polytope*)(v->at(i)))->getVolume()) reachableLeafVolumeMin = ((Polytope*)(v->at(i)))->getVolume() ;
+        			if(reachableLeafVolumeMax<((Polytope*)(v->at(i)))->getVolume()) reachableLeafVolumeMax = ((Polytope*)(v->at(i)))->getVolume() ;
+        			vector<Node*> c = v->at(i)->getNeighbors(v->at(i));
+        			bool isAtTheBoundry=false;
+        			for(int j=0;j<c.size(); j++  ){
+        				if (c[j]->isReachable ==false){ //this is a reachable polytope at the boundry
+        					isAtTheBoundry=true;
+
+        				}
+        			}
+        			if(isAtTheBoundry){
+        				boundryPoly++;
+        				boundryReachableLeafVolumeTotal += ((Polytope*)(v->at(i)))->getVolume() ;
+        				if(boundryReachableLeafVolumeMin>((Polytope*)(v->at(i)))->getVolume()) boundryReachableLeafVolumeMin = ((Polytope*)(v->at(i)))->getVolume() ;
+        				if(boundryReachableLeafVolumeMax<((Polytope*)(v->at(i)))->getVolume()) boundryReachableLeafVolumeMax = ((Polytope*)(v->at(i)))->getVolume() ;
+        			}
+        		}
+        	}
+
+        	levelTotal += v->at(i)->level;
+        	if(levelMin>v->at(i)->level) levelMin = v->at(i)->level ;
+        	if(levelMax<v->at(i)->level) levelMax = v->at(i)->level ;
+        	volumeTotal += ((Polytope*)(v->at(i)))->getVolume() ;
+        	if(volumeMin>((Polytope*)(v->at(i)))->getVolume()) volumeMin = ((Polytope*)(v->at(i)))->getVolume() ;
+            if(volumeMax<((Polytope*)(v->at(i)))->getVolume()) volumeMax = ((Polytope*)(v->at(i)))->getVolume() ;
+
+        }
+
+        double levelAverage = levelTotal/v->size();
+        double volumeAverage = volumeTotal / v->size();
+        double leafVolumeAverage = leafVolumeTotal / leaf;
+        double reachableLeafVolumeAverage=reachableLeafVolumeTotal / reachableLeaf ;
+        double boundryReachableLeafVolumeAverage=boundryReachableLeafVolumeTotal / boundryPoly ;
+        cout << "1. Number of divisions=" << count << endl ;
+        cout << "2. Number of hyperplanes=" << count*2 << endl ;
+        cout << "3. Number of Polytopes=" << polyCount << endl ;
+        cout << "4. Polytope Volume (min)=" << volumeMin << endl ;
+        cout << "5. Polytope Volume (max)=" << volumeMax << endl ;
+        cout << "6. Polytope Volume (avg)=" << levelAverage << endl ;
+        cout << "7. SPT depth (max)=" << levelMax << endl ;
+        cout << "8. SPT depth (avg)=" << volumeAverage << endl ;
+        cout << "9. Polytopes @boundry=" << 0 << endl ;
+        cout << "9. V.size=" << v->size() << endl ;
+        cout << "10. Leafs=" << leaf << endl ;
+        cout << "11. leaf Volume (min)=" << leafVolumeMin << endl ;
+        cout << "12. leaf Volume (max)=" << leafVolumeMax << endl ;
+        cout << "13. leaf Volume (avg)=" << leafVolumeAverage << endl ;
+        cout << "14. Reachable Leafs=" << reachableLeaf << endl ;
+        cout << "15. Reachable leaf Volume (min)=" << reachableLeafVolumeMin << endl ;
+        cout << "16. Reachable leaf Volume (max)=" << reachableLeafVolumeMax << endl ;
+        cout << "17. Reachable leaf Volume (avg)=" << reachableLeafVolumeAverage << endl ;
+        cout << "18. Boundry Polys=" << boundryPoly << endl ;
+        cout << "19. Boundry Reachable leaf Volume (min)=" << boundryReachableLeafVolumeMin << endl ;
+        cout << "20. Boundry Reachable leaf Volume (max)=" << boundryReachableLeafVolumeMax << endl ;
+        cout << "21. Boundry Reachable leaf Volume (avg)=" << boundryReachableLeafVolumeAverage << endl ;
+        }
     }
-    
 }

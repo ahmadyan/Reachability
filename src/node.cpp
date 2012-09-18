@@ -58,4 +58,13 @@ namespace reachability {
         }
         return NULL;
     }
+
+    void Node::pushNodes(std::vector<Node*> *v, int l){
+    	level = l ;
+     	v->push_back(this);
+    	std::vector<Node*> u = getChildren();
+    	for(int i=0;i<u.size();i++){
+    		u[i]->pushNodes(v, l+1);
+    	}
+    }
 }

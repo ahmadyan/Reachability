@@ -31,11 +31,13 @@ using namespace std;
 namespace reachability {
     Polytope::Polytope(int _dim){
         dim=_dim;
+        volume=-1;
     }
     
     Polytope::Polytope(int _dim, vector<Point*> v){
         dim=_dim;
         points=v;
+        volume=-1;
     }
     
     

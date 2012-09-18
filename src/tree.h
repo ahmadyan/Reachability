@@ -34,6 +34,7 @@ namespace reachability {
             virtual std::string draw();
             virtual std::string draw(int); //calling the draw function by id will fill that specific poly in red.
             virtual std::string dump();
+            std::vector<Node*>* getNodes();
             Node* getNodeByID(int _id);
         };
 }

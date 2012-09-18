@@ -362,7 +362,7 @@ namespace reachability{
     
     functionSign System::reachabilityUsingSampling(Point* p1, Point* p2){
         functionSign result = undefined; 
-        int samples=100;
+        int samples=3;
         double* f = new double[2];
         
         Point* tmp = new Point(2);
